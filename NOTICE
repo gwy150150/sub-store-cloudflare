@@ -1,0 +1,29 @@
+Sub-Store Cloudflare is a Cloudflare Worker application for subscription
+aggregation and cloud-side routing templates.
+
+The Worker code, deployment tooling, and documentation in this repository are
+distributed under the license in LICENSE. There is no warranty.
+
+The frontend in frontend/ is a trimmed Cloudflare-native edition based on the
+original Sub-Store frontend experience and remains accompanied by
+frontend/LICENSE.
+
+Upstream projects:
+
+- https://github.com/sub-store-org/Sub-Store
+- https://github.com/sub-store-org/Sub-Store-Front-End
+- https://github.com/realchendahuang/sub-store-cloudflare
+
+Derived work notice
+-------------------
+
+This repository is a deployment-fix derivative of
+https://github.com/realchendahuang/sub-store-cloudflare at commit
+4673e195b6fce7692f142da1e3b5ae558d45bef4 (2026-10-31, v1.1.0).
+
+Changes are limited to README and NOTICE notices, deployment documentation,
+and deployment helper scripts. No Worker runtime logic, frontend behaviour,
+or wrangler configuration was changed. The full list is in PATCH_NOTES.md.
+
+The original AGPL-3.0-or-later license in LICENSE is retained and applies
+to this derivative. Upstream attribution above is preserved.
