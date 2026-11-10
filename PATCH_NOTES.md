@@ -32,7 +32,7 @@
 | 文件 | 类型 | 内容 |
 | --- | --- | --- |
 | `scripts/install-fixed.sh` | 新增 | Linux / macOS / Git Bash 一键部署脚本：前置检查 → Corepack → 依赖与脚本注册表 → Cloudflare 登录 → `install:quick` → Token 校验 |
-| `scripts/install-fixed.ps1` | 新增 | Windows PowerShell 版一键脚本，逻辑同上 |
+| `scripts/install-fixed.ps1` | 新增 | Windows PowerShell 版一键脚本，逻辑同上；额外自动探测不在 PATH 中的 `node.exe` / `corepack.cmd` / `git.exe`，并把所在目录注入当前会话 PATH |
 | `scripts/verify-secrets.mjs` | 新增 | 部署后校验 `config/agent-setup.local.json`：两个 Token 都存在、互不相同、长度足够，并提示妥善保管 |
 | `docs/deploy-fix.zh-CN.md` | 新增 | 完整中文部署指南：前置条件、一键/手动命令、Token 保管、自定义域名（国内 `workers.dev` 不可直连）、验证清单、升级、常见问题、兼容边界 |
 | `PATCH_NOTES.md` | 新增 | 本文件 |

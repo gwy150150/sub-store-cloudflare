@@ -42,6 +42,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install-fixed.ps1
 
 脚本会依次做前置检查、启用 pnpm、安装依赖、检查/唤起 Cloudflare 登录、运行安装器、校验 Token。中途失败可以直接重跑，安装器会复用本地保存的 D1 ID 和 Token，不会重复建库。
 
+Windows 版会自动探测 `node.exe`、`corepack.cmd`、`git.exe` 的常见安装位置（包括 WorkBuddy 自带的 Node / PortableGit），并把所在目录注入当前会话的 PATH——即使这些工具没加进系统 PATH 也能运行。找不到时会明确报错并给出处理提示。
+
 ## 方式二：手动执行
 
 顺序不要调整——安装器开头会检查 `node / pnpm / curl`，且 `pnpm run setup` 必须发生在 `wrangler login` 之前（否则 wrangler 还没装好）：
