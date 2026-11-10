@@ -1,5 +1,17 @@
 # Sub-Store Cloudflare
 
+> **This repository is a deployment-fix edition.**
+>
+> The upstream `Deploy to Cloudflare` button does not render the two required Worker Secrets under the current Cloudflare Workers Builds form, so the first build always fails (upstream [issue #18](https://github.com/realchendahuang/sub-store-cloudflare/issues/18), still open). All upstream code is preserved; only the deployment path, helper scripts and documentation were fixed.
+>
+> - Start with the CLI one-command installers: `scripts/install-fixed.sh` (Linux / macOS / Git Bash) or `scripts/install-fixed.ps1` (Windows).
+> - Full patch list, root cause and design decisions: [PATCH_NOTES.md](PATCH_NOTES.md). Chinese deployment guide: [docs/deploy-fix.zh-CN.md](docs/deploy-fix.zh-CN.md).
+> - Based on upstream v1.1.0 (commit `4673e19`, 2026-10-31); **AGPL-3.0-or-later** retained.
+>
+> The "fastest deployment" button section below is upstream text and **does not work with the current Cloudflare form**.
+
+---
+
 [![Release](https://img.shields.io/github/v/release/realchendahuang/sub-store-cloudflare?include_prereleases&sort=semver)](https://github.com/realchendahuang/sub-store-cloudflare/releases)
 [![License: AGPL-3.0](https://img.shields.io/github/license/realchendahuang/sub-store-cloudflare)](LICENSE)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white)](https://developers.cloudflare.com/workers/)
