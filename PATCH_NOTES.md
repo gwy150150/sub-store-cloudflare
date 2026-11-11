@@ -37,6 +37,8 @@
 | `scripts/verify-secrets.mjs` | 新增 | 部署后校验 `config/agent-setup.local.json`：两个 Token 都存在、互不相同、长度足够，并提示妥善保管 |
 | `package.json` | 修改 | **Windows 兼容**：`build:frontend` 原为 `VITE_API_URL=/ pnpm ...`，Unix 专用语法在 Windows 的 cmd.exe 下报「'VITE_API_URL' 不是内部或外部命令」。前端 `useHostAPI.ts` 本来就以 `/` 为默认值，去掉前缀后行为完全等价且跨平台 |
 | `cloudflare/src/worker-configuration.d.ts` | 修改 | 用当前锁定的 Wrangler 4.159.0 重新生成。上游提交的文件带旧版 `wrangler types` 的 hash，`types:check` 会报 `Types ... are out of date`，导致安装器的 `pnpm run check` 中断 |
+| `scripts/render-seed-sql.mjs` | 修改 | **D1 兼容**：生成的 seed SQL 不再输出 `BEGIN TRANSACTION;` / `COMMIT;`。`wrangler d1 execute --file` 本身会把文件包在事务里，显式事务语句会被 D1 的 SQLite 后端拒绝（`please use state.storage.transaction() ... instead`），导致 `Import seed into D1` 失败——导入真实订阅源时同样会中招 |
+| `scripts/install-cloudflare.mjs` | 修改 | 除 Windows 命令解析外，空 seed（sources / collections / templates 均为 0）时跳过远程 D1 导入，避免 `--quick` 空部署白白锁库并报错 |
 | `frontend/README.md` | 修改 | 同步说明 `VITE_API_URL` 可省略及其原因 |
 | `docs/deploy-fix.zh-CN.md` | 新增 | 完整中文部署指南：前置条件、一键/手动命令、Token 保管、自定义域名（国内 `workers.dev` 不可直连）、验证清单、升级、常见问题、兼容边界 |
 | `PATCH_NOTES.md` | 新增 | 本文件 |

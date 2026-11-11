@@ -116,7 +116,17 @@ async function main() {
 
   run("pnpm", ["run", "seed:render"], { label: "Render seed SQL" });
   state.renderedSeed = true;
-  run("pnpm", ["run", "seed:remote"], { label: "Import seed into D1" });
+  // An empty seed has nothing to import, and running an empty file through
+  // `wrangler d1 execute --file` still locks the remote database briefly.
+  const seedRowCount =
+    (setup.sources || []).length +
+    (setup.collections || []).length +
+    (setup.templates || []).length;
+  if (seedRowCount > 0) {
+    run("pnpm", ["run", "seed:remote"], { label: "Import seed into D1" });
+  } else {
+    info("No seed rows to import; skipped remote D1 seed execution.");
+  }
   state.seeded = true;
 
   const baseUrl = baseUrlFor(workerName, deployment, deployResult.stdout + deployResult.stderr);
