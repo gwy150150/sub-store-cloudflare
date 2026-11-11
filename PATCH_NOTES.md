@@ -35,6 +35,9 @@
 | `scripts/install-fixed.ps1` | 新增 | Windows PowerShell 版一键脚本，逻辑同上；额外自动探测不在 PATH 中的 `node.exe` / `corepack.cmd` / `git.exe`，并把所在目录注入当前会话 PATH |
 | `scripts/install-cloudflare.mjs` | 修改 | **Windows 兼容补丁**：上游安装器用 `spawnSync("pnpm", ...)`，而 Corepack 在 Windows 上只提供 `pnpm.CMD` / `pnpm.ps1`，Node 直接调用会 `ENOENT` / `EINVAL`，导致第一步就报 `pnpm is required.`。本版在 Windows 上改为用 `process.execPath` 直调 Corepack 的 `node_modules/corepack/dist/pnpm.js`，无需 shell、无需 PATH 解析，`wrangler secret put` 的 stdin 传递也保持正常；非 Windows 行为完全不变 |
 | `scripts/verify-secrets.mjs` | 新增 | 部署后校验 `config/agent-setup.local.json`：两个 Token 都存在、互不相同、长度足够，并提示妥善保管 |
+| `package.json` | 修改 | **Windows 兼容**：`build:frontend` 原为 `VITE_API_URL=/ pnpm ...`，Unix 专用语法在 Windows 的 cmd.exe 下报「'VITE_API_URL' 不是内部或外部命令」。前端 `useHostAPI.ts` 本来就以 `/` 为默认值，去掉前缀后行为完全等价且跨平台 |
+| `cloudflare/src/worker-configuration.d.ts` | 修改 | 用当前锁定的 Wrangler 4.159.0 重新生成。上游提交的文件带旧版 `wrangler types` 的 hash，`types:check` 会报 `Types ... are out of date`，导致安装器的 `pnpm run check` 中断 |
+| `frontend/README.md` | 修改 | 同步说明 `VITE_API_URL` 可省略及其原因 |
 | `docs/deploy-fix.zh-CN.md` | 新增 | 完整中文部署指南：前置条件、一键/手动命令、Token 保管、自定义域名（国内 `workers.dev` 不可直连）、验证清单、升级、常见问题、兼容边界 |
 | `PATCH_NOTES.md` | 新增 | 本文件 |
 | `README.md` | 修改 | 顶部加「部署修复版」声明，并标注上游原文中「最快部署：三步完成」一节在当前表单下已失效 |
@@ -42,7 +45,7 @@
 | `docs/troubleshooting.md` | 修改 | 新增「Deploy to Cloudflare 表单 Secret 缺失」排查小节 |
 | `NOTICE` | 修改 | 追加派生说明、上游 commit 与「未改动 Worker 运行时逻辑」的声明 |
 
-**没有改动**：`wrangler.jsonc`、`cloudflare/**`、`frontend/**`、`config/**` 以及任何 Worker 运行时代码。唯一被修改的上游文件是部署安装器 `scripts/install-cloudflare.mjs`，且改动只落在 `commandSpec()` 这一层命令解析上，Linux / macOS 走原路径不变。这样以后合并上游更新时冲突面最小。
+**没有改动**：`wrangler.jsonc`、`cloudflare/src/**` 里的业务代码、`frontend/src/**`、`config/**` 以及任何 Worker 运行时逻辑。被修改的上游文件只有 4 类：部署安装器（`commandSpec()` 一层命令解析，Linux / macOS 走原路径不变）、根 `package.json` 的构建脚本、一个自动生成的类型声明文件、以及文档。这样以后合并上游更新时冲突面最小。
 
 ---
 

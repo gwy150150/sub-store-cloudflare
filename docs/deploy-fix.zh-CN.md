@@ -118,6 +118,8 @@ pnpm run install:quick
 | 节点全被过滤 | 先移除地区 include 过滤器，只保留 `clean-provider-nodes`、`dedupe-by-endpoint`、`sort-by-name` |
 | Wrangler 没登录 | `pnpm --dir cloudflare exec wrangler login` 后重跑脚本 |
 | 安装器第一行就报 `pnpm is required.` / `ENOENT` | Windows 特有：上游安装器用 `spawnSync("pnpm")`，但 Corepack 只生成 `pnpm.CMD` / `pnpm.ps1`，Node 子进程调用不到。**本修复版已修好**（Windows 下由 `node.exe` 直调 Corepack 的 `pnpm.js`）。若你从旧提交克隆，先 `git pull --ff-only`；可用 `node scripts/install-cloudflare.mjs --doctor` 验证，正常应显示 `> pnpm: 11.7.0` |
+| `wrangler types` 报 `Types ... are out of date` | 上游提交的类型声明文件带旧版 hash。本修复版已用 Wrangler 4.159.0 重新生成；若自行升级了 Wrangler，跑 `pnpm --dir cloudflare run types` 再重跑脚本 |
+| 构建报 `'VITE_API_URL' 不是内部或外部命令` | 上游 `build:frontend` 用了 Unix 专用的 `VAR=value command` 前缀。本修复版已去掉（前端默认就是 `/`）；若从旧提交克隆，先 `git pull --ff-only` |
 | 只诊断不部署 | `pnpm run install:doctor` |
 
 ## 免费版边界与兼容边界
