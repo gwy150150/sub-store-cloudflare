@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { randomBytes } from "node:crypto";
 import { createInterface } from "node:readline/promises";
 
@@ -30,6 +31,30 @@ const state = {
   seeded: false,
   verified: false,
 };
+
+// Windows: Corepack exposes pnpm only as pnpm.CMD / pnpm.ps1 shims, which
+// Node's spawnSync cannot launch (ENOENT / EINVAL). pnpm.CMD itself just runs
+// `node.exe <corepack>/dist/pnpm.js`, so call that JS entrypoint directly.
+// This avoids `shell: true` (which would mangle arguments) and keeps stdin
+// intact for `wrangler secret put`.
+const IS_WINDOWS = process.platform === "win32";
+const COREPACK_PNPM_JS = join(
+  dirname(process.execPath),
+  "node_modules",
+  "corepack",
+  "dist",
+  "pnpm.js"
+);
+
+function commandSpec(command, args) {
+  if (IS_WINDOWS && command === "pnpm") {
+    if (existsSync(COREPACK_PNPM_JS)) {
+      return { command: process.execPath, args: [COREPACK_PNPM_JS, ...args], shell: false };
+    }
+    return { command: "pnpm.cmd", args, shell: true };
+  }
+  return { command, args, shell: false };
+}
 
 await main();
 
@@ -233,10 +258,12 @@ function parseDatabaseId(output) {
 }
 
 function setSecret(key, value) {
-  const result = spawnSync("pnpm", ["--dir", "cloudflare", "exec", "wrangler", "secret", "put", key, "--config", "wrangler.deploy.local.jsonc"], {
+  const spec = commandSpec("pnpm", ["--dir", "cloudflare", "exec", "wrangler", "secret", "put", key, "--config", "wrangler.deploy.local.jsonc"]);
+  const result = spawnSync(spec.command, spec.args, {
     input: `${value}\n`,
     encoding: "utf8",
     stdio: ["pipe", "pipe", "pipe"],
+    shell: spec.shell,
   });
   if (result.status !== 0) {
     fail(`Failed to set ${key}.\n${result.stderr || result.stdout}`);
@@ -385,7 +412,8 @@ function maybePrintSetupStatus() {
 }
 
 function checkCommand(command, commandArgs, { label }) {
-  const result = spawnSync(command, commandArgs, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  const spec = commandSpec(command, commandArgs);
+  const result = spawnSync(spec.command, spec.args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], shell: spec.shell });
   if (result.status !== 0) {
     fail(`${label} is required.\n${result.stderr || result.stdout}`);
   }
@@ -400,7 +428,8 @@ function run(command, commandArgs, options = {}) {
   }
   info(label);
   const stdio = options.capture ? ["ignore", "pipe", "pipe"] : options.passthrough ? "inherit" : "inherit";
-  const result = spawnSync(command, commandArgs, { encoding: "utf8", stdio });
+  const spec = commandSpec(command, commandArgs);
+  const result = spawnSync(spec.command, spec.args, { encoding: "utf8", stdio, shell: spec.shell });
   if (options.capture && options.echo) {
     if (result.stdout) process.stdout.write(result.stdout);
     if (result.stderr) process.stderr.write(result.stderr);

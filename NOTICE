@@ -22,8 +22,11 @@ https://github.com/realchendahuang/sub-store-cloudflare at commit
 4673e195b6fce7692f142da1e3b5ae558d45bef4 (2026-10-31, v1.1.0).
 
 Changes are limited to README and NOTICE notices, deployment documentation,
-and deployment helper scripts. No Worker runtime logic, frontend behaviour,
-or wrangler configuration was changed. The full list is in PATCH_NOTES.md.
+and deployment helper scripts. The upstream deployment installer received a
+Windows-only compatibility fix (resolving pnpm through Corepack's JS
+entrypoint); non-Windows behaviour is unchanged. No Worker runtime logic,
+frontend behaviour, or wrangler configuration was changed.
+The full list is in PATCH_NOTES.md.
 
 The original AGPL-3.0-or-later license in LICENSE is retained and applies
 to this derivative. Upstream attribution above is preserved.

@@ -33,6 +33,7 @@
 | --- | --- | --- |
 | `scripts/install-fixed.sh` | 新增 | Linux / macOS / Git Bash 一键部署脚本：前置检查 → Corepack → 依赖与脚本注册表 → Cloudflare 登录 → `install:quick` → Token 校验 |
 | `scripts/install-fixed.ps1` | 新增 | Windows PowerShell 版一键脚本，逻辑同上；额外自动探测不在 PATH 中的 `node.exe` / `corepack.cmd` / `git.exe`，并把所在目录注入当前会话 PATH |
+| `scripts/install-cloudflare.mjs` | 修改 | **Windows 兼容补丁**：上游安装器用 `spawnSync("pnpm", ...)`，而 Corepack 在 Windows 上只提供 `pnpm.CMD` / `pnpm.ps1`，Node 直接调用会 `ENOENT` / `EINVAL`，导致第一步就报 `pnpm is required.`。本版在 Windows 上改为用 `process.execPath` 直调 Corepack 的 `node_modules/corepack/dist/pnpm.js`，无需 shell、无需 PATH 解析，`wrangler secret put` 的 stdin 传递也保持正常；非 Windows 行为完全不变 |
 | `scripts/verify-secrets.mjs` | 新增 | 部署后校验 `config/agent-setup.local.json`：两个 Token 都存在、互不相同、长度足够，并提示妥善保管 |
 | `docs/deploy-fix.zh-CN.md` | 新增 | 完整中文部署指南：前置条件、一键/手动命令、Token 保管、自定义域名（国内 `workers.dev` 不可直连）、验证清单、升级、常见问题、兼容边界 |
 | `PATCH_NOTES.md` | 新增 | 本文件 |
@@ -41,7 +42,7 @@
 | `docs/troubleshooting.md` | 修改 | 新增「Deploy to Cloudflare 表单 Secret 缺失」排查小节 |
 | `NOTICE` | 修改 | 追加派生说明、上游 commit 与「未改动 Worker 运行时逻辑」的声明 |
 
-**没有改动**：`wrangler.jsonc`、`cloudflare/**`、`frontend/**`、`config/**` 以及任何 Worker 运行时代码。这样以后合并上游更新时冲突面最小。
+**没有改动**：`wrangler.jsonc`、`cloudflare/**`、`frontend/**`、`config/**` 以及任何 Worker 运行时代码。唯一被修改的上游文件是部署安装器 `scripts/install-cloudflare.mjs`，且改动只落在 `commandSpec()` 这一层命令解析上，Linux / macOS 走原路径不变。这样以后合并上游更新时冲突面最小。
 
 ---
 
@@ -65,7 +66,7 @@ git fetch upstream --tags
 git merge upstream/main
 ```
 
-需要留意的文件只有 `README.md`、`NOTICE`、`docs/deployment.md`、`docs/troubleshooting.md`；新增的 `PATCH_NOTES.md`、`docs/deploy-fix.zh-CN.md`、`scripts/install-fixed.*`、`scripts/verify-secrets.mjs` 不与上游冲突。
+需要留意的文件只有 `README.md`、`README.en.md`、`NOTICE`、`docs/deployment.md`、`docs/troubleshooting.md` 和 `scripts/install-cloudflare.mjs`（若上游也改了安装器，把 `commandSpec()` 与三处 `spawnSync` 调用重新套用即可）；新增的 `PATCH_NOTES.md`、`docs/deploy-fix.zh-CN.md`、`scripts/install-fixed.*`、`scripts/verify-secrets.mjs` 不与上游冲突。
 
 ---
 
@@ -76,7 +77,11 @@ git merge upstream/main
 ```bash
 bash -n scripts/install-fixed.sh
 node --check scripts/verify-secrets.mjs
+node --check scripts/install-cloudflare.mjs
+node scripts/install-cloudflare.mjs --doctor
 ```
+
+`--doctor` 只检查 Node / pnpm / curl / Wrangler、Cloudflare 登录状态与本地配置，**不会创建或部署任何线上资源**，适合在 Windows 上验证 pnpm 调用链是否修好。
 
 部署完成后的验收清单见 [中文部署指南](docs/deploy-fix.zh-CN.md#部署后验收)。上游自带的安装器本身也会在部署后 curl 验证 `/api/env`、`/api/templates`、`/api/sources`、`/api/collections` 四个接口。
 
