@@ -134,6 +134,8 @@ Deploy Button 会在你的账号中创建仓库副本，但不会自动合并本
 
 ## 常用文档
 
+- [中文部署指南（推荐）](docs/deploy-fix.zh-CN.md)
+- [实机部署验证记录](docs/verified-deployment.zh-CN.md)
 - [五分钟快速开始](docs/quick-start.md)
 - [部署说明](docs/deployment.md)
 - [升级指南](docs/upgrading.md)

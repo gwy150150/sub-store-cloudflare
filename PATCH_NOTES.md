@@ -90,6 +90,8 @@ node scripts/install-cloudflare.mjs --doctor
 
 部署完成后的验收清单见 [中文部署指南](docs/deploy-fix.zh-CN.md#部署后验收)。上游自带的安装器本身也会在部署后 curl 验证 `/api/env`、`/api/templates`、`/api/sources`、`/api/collections` 四个接口。
 
+本修复版已在真实 Cloudflare Workers Free 账号上完成端到端部署与验收，脱敏记录见 [实机部署验证记录](docs/verified-deployment.zh-CN.md)——包含四个 Windows / D1 兼容问题的实际现象、`deployed: yes` 的判读方式，以及 `workers.dev` 不可达、WAF `error 1010`、空 Collection 返回 500 等「看起来像故障但并不是」的环境现象。
+
 ---
 
 ## 六、许可与归属

@@ -6,7 +6,9 @@
 - [product-scope.md](product-scope.md)：项目保留什么、不保留什么，以及如何判断新功能是否属于核心范围。
 - [script-plugins.md](script-plugins.md)：构建时 JavaScript Filter / Operator、个人脚本和兼容边界。
 - [superpowers/specs/2026-07-11-build-time-script-compatibility-design.md](superpowers/specs/2026-07-11-build-time-script-compatibility-design.md)：构建时 JavaScript 兼容的架构与免费版性能设计。
-- [deployment.md](deployment.md)：Cloudflare 一键按钮、Agent/CLI installer、手动 Wrangler 部署。
+- [deploy-fix.zh-CN.md](deploy-fix.zh-CN.md)：**本修复版推荐入口**，CLI 一键/手动部署、Token 保管、自定义域名、升级与常见问题。
+- [verified-deployment.zh-CN.md](verified-deployment.zh-CN.md)：真实 Cloudflare 账号上的端到端部署与验收记录（脱敏）。
+- [deployment.md](deployment.md)：Cloudflare 一键按钮、Agent/CLI installer、手动 Wrangler 部署（按钮路径有已知缺陷，见文内警告）。
 - [upgrading.md](upgrading.md)：Deploy Button 仓库副本、Agent/CLI、D1 migration、备份和回滚。
 - [ai-agent-install.md](ai-agent-install.md)：让 Codex、Claude Code 等 AI Agent 引导部署、导入配置和处理 Cloudflare 缺失状态。
 - [testing.md](testing.md)：本地检查、发布 gate、部署 dry-run 和隐私扫描。
@@ -27,4 +29,4 @@
 - [../config/agent-setup.schema.json](../config/agent-setup.schema.json)：Agent 本地配置 schema。
 - [../config/rule-presets.json](../config/rule-presets.json)：内置规则模板和过滤器预设。
 
-第一次部署建议先读 [quick-start.md](quick-start.md)。普通用户优先用 Cloudflare 官方 Deploy Button；需要批量导入订阅源和组合订阅时再用 `pnpm run install:cloudflare`。
+**本修复版第一次部署请先读 [deploy-fix.zh-CN.md](deploy-fix.zh-CN.md)。** 上游的 Cloudflare Deploy Button 在当前 Workers Builds 表单下不会渲染两个必需的 Worker Secret，首次构建必然失败（上游 issue #18，见 [../PATCH_NOTES.md](../PATCH_NOTES.md)）；`quick-start.md` 中的按钮路径保留作上游原始说明，请勿直接照做。需要批量导入订阅源时再用 `pnpm run install:cloudflare`。
