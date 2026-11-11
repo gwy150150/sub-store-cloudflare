@@ -33,6 +33,9 @@ cloudflare/src/generated/
 **/.nyc_output/
 **/*.tsbuildinfo
 *.cpuprofile
+# pnpm generates this per-workspace lockfile locally when using --dir cloudflare.
+# The repository is locked by the root pnpm-lock.yaml only.
+cloudflare/pnpm-lock.yaml
 
 # Local runtime state and secrets
 .dev.vars
